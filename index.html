@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тактильный маршрут</title>
+    <link rel="manifest" href="manifest.json">
+    <!-- Подключаем карты Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        body { margin: 0; padding: 0; font-family: sans-serif; }
+        #map { height: 100vh; width: 100%; }
+        .point-info { max-width: 250px; }
+        .point-info img { width: 100%; border-radius: 5px; margin-bottom: 10px; }
+        .point-info h3 { margin: 0 0 5px 0; font-size: 16px; }
+        .point-info p { margin: 0; font-size: 14px; color: #333; }
+        .type { font-size: 12px; color: #666; margin-bottom: 5px; display: block;}
+    </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script>
+    // Инициализирую карту (центр по моим координатам)
+    var map = L.map('map').setView([56.471000, 84.962000], 17);
+
+    // Добавляю слой карты (OpenStreetMap)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    // МОИ ТОЧКИ (сюда добавлю фото позже)
+    var points = [
+        { lat: 56.471184, lng: 84.961975, title: "Скамейка у каскадного фонтана", type: "Звуковой", desc: "Сядьте на скамейку. Закройте глаза на 30 секунд. Слушайте журчание каскада. Постарайтесь отделить звук воды от шума дороги за спиной. Сконцентрируйтесь только на воде." },
+        { lat: 56.471129, lng: 84.962224, title: "Гранитный куб с барельефом", type: "Тактильный", desc: "Закройте глаза и медленно проведите пальцами по барельефу. Какая поверхность на ощупь — холодная, тёплая, гладкая или шершавая?" },
+        { lat: 56.471014, lng: 84.962075, title: "Каменная тропинка", type: "Тактильный", desc: "Пройдите по этой тропинке очень медленно. Почувствуйте стопами каждый камень. Камни гладкие или острые? Сравните эти ощущения с обычным асфальтом." },
+        { lat: 56.470886, lng: 84.962347, title: "Декоративные кубы", type: "Тактильный", desc: "Не касаясь металла, поднесите ладони близко к решётке. Чувствуете ли вы холод от камней внутри? Теперь аккуратно прикоснитесь к металлической сетке." },
+        { lat: 56.470895, lng: 84.962612, title: "Фонтан", type: "Комбинированный", desc: "Подойдите ближе к воде. Опустите кончики пальцев в воду. Затем закройте глаза и просто слушайте звук падающих струй 20 секунд." },
+        { lat: 56.470602, lng: 84.962543, title: "Деревья", type: "Комбинированный", desc: "Прикоснитесь к мху на коре — какой он? Потрогайте еловые ветки. Постойте 30 секунд и послушайте шум листвы на ветру." },
+        { lat: 56.470402, lng: 84.962039, title: "Большие камни", type: "Тактильный", desc: "Положите на камень обе ладони. Почувствуйте его температуру. Проведите пальцами по поверхности, находя самые гладкие и шершавые участки." }
+    ];
+
+    // Функция для добавления точек на карту
+    points.forEach(function(point, index) {
+        // Создаю всплывающее окно с информацией
+        var popupContent = `
+            <div class="point-info">
+                <span class="type">Тип: ${point.type}</span>
+                <h3>${index + 1}. ${point.title}</h3>
+                <p>${point.desc}</p>
+            </div>
+        `;
+        
+        // Добавляю маркер
+        L.marker([point.lat, point.lng])
+            .addTo(map)
+            .bindPopup(popupContent);
+    });
+</script>
+
+</body>
+</html>
