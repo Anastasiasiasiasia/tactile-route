@@ -13,25 +13,39 @@
         #map { height: 100vh; width: 100%; }
         /* Стили для красивого окошка с фото и текстом */
         .point-info { max-width: 300px; }
-        .point-images { 
-            display: flex; 
-            gap: 5px; 
-            margin-bottom: 10px; 
-        }
-        .point-images img { 
-            width: 50%; 
-            height: 100px; 
-            object-fit: cover; 
-            border-radius: 5px; 
-        }
+        .point-images { display: flex; gap: 5px; margin-bottom: 10px; }
+        .point-images img { width: 50%; height: 100px; object-fit: cover; border-radius: 5px; }
         .point-info h3 { margin: 0 0 5px 0; font-size: 16px; }
-        .point-info p { margin: 0; font-size: 14px; color: #333; line-height: 1.4; }
-        .type { font-size: 12px; color: #666; margin-bottom: 5px; display: block; font-weight: bold;}
+        .point-info p { margin: 0 0 10px 0; font-size: 14px; color: #333; line-height: 1.4; }
+        .type { font-size: 12px; color: #666; margin-bottom: 5px; display: block; font-weight: bold; }
+
+        /* Стили для кнопки таймера и отсчёта */
+        .timer-btn {
+            background-color: #008CBA; color: white; border: none; padding: 8px 15px;
+            text-align: center; display: block; font-size: 14px; border-radius: 5px;
+            cursor: pointer; width: 100%; margin-top: 10px; font-weight: bold;
+        }
+        .timer-btn:hover { background-color: #0073e6; }
+        .timer-display {
+            text-align: center; font-size: 16px; font-weight: bold;
+            color: #d32f2f; margin-top: 5px; display: none;
+        }
+
+        /* Стиль для кнопки установки приложения */
+        #installBtn {
+            display: none; position: fixed; bottom: 20px; left: 50%;
+            transform: translateX(-50%); z-index: 1000;
+            background: #2E7D32; color: white; border: none;
+            padding: 12px 24px; border-radius: 8px; font-size: 16px;
+            cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body>
 
 <div id="map"></div>
+
+<button id="installBtn">📲 Установить приложение</button>
 
 <script>
     // Инициализирую карту (центр по моим координатам)
@@ -42,62 +56,23 @@
         attribution: '© OpenStreetMap'
     }).addTo(map);
 
-    // МОИ ТОЧКИ С ОПИСАНИЯМИ И ДВУМЯ КАРТИНКАМИ
+    // МОИ ТОЧКИ С ОПИСАНИЯМИ, ДВУМЯ КАРТИНКАМИ, АУДИО И ВРЕМЕНЕМ ТАЙМЕРА
     var points = [
-        { 
-            lat: 56.471184, lng: 84.961975, 
-            title: "Скамейка у каскадного фонтана", 
-            type: "Звуковой", 
-            img1: "1_bench.jpg", img2: "1_water.jpg", 
-            desc: "Сядьте на скамейку. Закройте глаза на 30 секунд. Постарайтесь отделить журчание воды в фонтане от шума дороги за спиной. Сосредоточьтесь только на звуке падающих струй." 
-        },
-        { 
-            lat: 56.471129, lng: 84.962224, 
-            title: "Гранитный куб с барельефом", 
-            type: "Тактильный", 
-            img1: "2_stone.jpg", img2: "2_relief.jpg", 
-            desc: "Подойдите к кубу. Закройте глаза и медленно проведите ладонью по барельефу. Найдите пальцами самые выступающие части и самые глубокие впадины. Какая поверхность на ощупь – холодная или тёплая, гладкая или шершавая?" 
-        },
-        { 
-            lat: 56.471014, lng: 84.962075, 
-            title: "Каменная тропинка", 
-            type: "Тактильный", 
-            img1: "3_path.jpg", img2: "3_stones.jpg", 
-            desc: "Пройдите по тропинке очень медленно. Почувствуйте стопами каждый камень. Камни гладкие или острые? Как они расположены – хаотично или ровно? Сравните эти ощущения с обычным асфальтом." 
-        },
-        { 
-            lat: 56.470886, lng: 84.962347, 
-            title: "Декоративные кубы", 
-            type: "Тактильный", 
-            img1: "4_cubes.jpg", img2: "4_grid.jpg", 
-            desc: "Подойдите к кубам. Не касаясь металла, поднесите ладони близко к решетке чувствуете ли вы холод от камней внутри? Теперь аккуратно прикоснитесь к металлической сетке, а затем к камням. Сравните их текстуры." 
-        },
-        { 
-            lat: 56.470895, lng: 84.962612, 
-            title: "Фонтан", 
-            type: "Комбинированный", 
-            img1: "5_fountain.jpg", img2: "5_water.jpg", 
-            desc: "Медленно проведите рукой над водой, не касаясь её. Чувствуете влажность или прохладу воздуха? Теперь аккуратно коснитесь воды. Сделайте глубокий вдох и послушайте, как шум фонтана заглушает все остальные звуки. Побудьте в этом моменте 20 секунд." 
-        },
-        { 
-            lat: 56.470602, lng: 84.962543, 
-            title: "Деревья", 
-            type: "Комбинированный", 
-            img1: "6_trees.jpg", img2: "6_moss.jpg", 
-            desc: "Прислушайтесь к своим шагам: трава, листья под ногами создают собственный звук. Подойдите к стволу и приложите ладонь к мху. Какой он – мягкий, влажный? Теперь аккуратно погладьте еловую ветку, не уколовшись. Сравните ощущения: какая текстура вам приятнее? Сделайте глубокий вдох и выдох вместе с шумом ветра." 
-        },
-        { 
-            lat: 56.470402, lng: 84.962039, 
-            title: "Большие камни", 
-            type: "Тактильный", 
-            img1: "7_big_stone.jpg", img2: "7_texture.jpg", 
-            desc: "Подойдите к самому большому камню. Положите на него обе ладони. Почувствуйте его температуру (он нагрет солнцем или прохладен?). Медленно проведите пальцами по поверхности, находя самые гладкие и самые шершавые участки." 
-        }
+        { lat: 56.471184, lng: 84.961975, title: "Скамейка у каскадного фонтана", type: "Звуковой", img1: "1_bench.jpg", img2: "1_water.jpg", audio: "1.mp3", time: 30, desc: "Сядьте на скамейку. Закройте глаза на 30 секунд. Постарайтесь отделить журчание воды в фонтане от шума дороги за спиной. Сосредоточьтесь только на звуке падающих струй." },
+        { lat: 56.471129, lng: 84.962224, title: "Гранитный куб с барельефом", type: "Тактильный", img1: "2_stone.jpg", img2: "2_relief.jpg", audio: "2.mp3", time: 20, desc: "Подойдите к кубу. Закройте глаза и медленно проведите ладонью по барельефу. Найдите пальцами самые выступающие части и самые глубокие впадины. Какая поверхность на ощупь – холодная или тёплая, гладкая или шершавая?" },
+        { lat: 56.471014, lng: 84.962075, title: "Каменная тропинка", type: "Тактильный", img1: "3_path.jpg", img2: "3_stones.jpg", audio: "3.mp3", time: 15, desc: "Пройдите по тропинке очень медленно. Почувствуйте стопами каждый камень. Камни гладкие или острые? Как они расположены – хаотично или ровно? Сравните эти ощущения с обычным асфальтом." },
+        { lat: 56.470886, lng: 84.962347, title: "Декоративные кубы", type: "Тактильный", img1: "4_cubes.jpg", img2: "4_grid.jpg", audio: "4.mp3", time: 20, desc: "Подойдите к кубам. Не касаясь металла, поднесите ладони близко к решетке – чувствуете ли вы холод от камней внутри? Теперь аккуратно прикоснитесь к металлической сетке, а затем к камням. Сравните их текстуры." },
+        { lat: 56.470895, lng: 84.962612, title: "Фонтан", type: "Комбинированный", img1: "5_fountain.jpg", img2: "5_water.jpg", audio: "5.mp3", time: 20, desc: "Медленно проведите рукой над водой, не касаясь её. Чувствуете влажность или прохладу воздуха? Теперь аккуратно коснитесь воды. Сделайте глубокий вдох и послушайте, как шум фонтана заглушает все остальные звуки. Побудьте в этом моменте 20 секунд." },
+        { lat: 56.470602, lng: 84.962543, title: "Деревья", type: "Комбинированный", img1: "6_trees.jpg", img2: "6_moss.jpg", audio: "6.mp3", time: 30, desc: "Прислушайтесь к своим шагам: трава и листья под ногами создают собственный звук. Подойдите к стволу и приложите ладонь к мху. Какой он – мягкий, влажный? Теперь аккуратно погладьте еловую ветку, не уколовшись. Сравните ощущения: какая текстура вам приятнее? Сделайте глубокий вдох и выдох вместе с шумом ветра." },
+        { lat: 56.470402, lng: 84.962039, title: "Большие камни", type: "Тактильный", img1: "7_big_stone.jpg", img2: "7_texture.jpg", audio: "7.mp3", time: 30, desc: "Подойдите к самому большому камню. Положите на него обе ладони. Почувствуйте его температуру (он нагрет солнцем или прохладен?). Медленно проведите пальцами по поверхности, находя самые гладкие и самые шершавые участки." }
     ];
 
     // Функция для добавления точек на карту
     points.forEach(function(point, index) {
-        // Создаю всплывающее окно с двумя картинками и текстом
+        // Уникальный id для блока с отсчётом таймера у каждой точки
+        var displayId = "display_" + index;
+
+        // Создаю всплывающее окно: две картинки, тип, название, описание, аудио и таймер
         var popupContent = `
             <div class="point-info">
                 <div class="point-images">
@@ -107,14 +82,77 @@
                 <span class="type">Тип: ${point.type}</span>
                 <h3>${index + 1}. ${point.title}</h3>
                 <p>${point.desc}</p>
+
+                <!-- Аудиоплеер с голосовой инструкцией -->
+                <audio controls style="width: 100%; margin-top: 5px;">
+                    <source src="${point.audio}" type="audio/mpeg">
+                </audio>
+
+                <!-- Кнопка запуска таймера и поле для отсчёта -->
+                <button class="timer-btn" onclick="startTimer(${point.time}, '${displayId}', this)">▶ Запустить таймер (${point.time} сек)</button>
+                <div id="${displayId}" class="timer-display"></div>
             </div>
         `;
-        
-        // Добавляю маркер
+
+        // Добавляю маркер на карту с этим окном
         L.marker([point.lat, point.lng])
             .addTo(map)
             .bindPopup(popupContent);
     });
+
+    // Функция работы таймера (обратный отсчёт)
+    function startTimer(seconds, displayId, btnElement) {
+        var display = document.getElementById(displayId);
+        var timeLeft = seconds;
+
+        // Блокирую кнопку, чтобы не нажимали дважды, и сбрасываю цвет на красный
+        btnElement.disabled = true;
+        btnElement.style.backgroundColor = "#999";
+        display.style.display = "block";
+        display.style.color = "#d32f2f";
+        display.innerHTML = "Осталось: " + timeLeft + " сек";
+
+        // Каждую секунду уменьшаю счётчик
+        var countdown = setInterval(function() {
+            timeLeft--;
+            display.innerHTML = "Осталось: " + timeLeft + " сек";
+
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                display.innerHTML = "✅ Время вышло!";
+                display.style.color = "#4CAF50";
+                btnElement.disabled = false;
+                btnElement.style.backgroundColor = "#008CBA";
+            }
+        }, 1000);
+    }
+
+    // Кнопка установки приложения (PWA)
+    let installPrompt = null;
+    const installBtn = document.getElementById('installBtn');
+
+    // Браузер сообщает, что приложение можно установить — показываем кнопку
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        installPrompt = e;
+        installBtn.style.display = 'block';
+    });
+
+    // По нажатию на кнопку запускаем установку
+    installBtn.addEventListener('click', async () => {
+        if (!installPrompt) return;
+        installPrompt.prompt();
+        const result = await installPrompt.userChoice;
+        if (result.outcome === 'accepted') {
+            installBtn.style.display = 'none';
+        }
+        installPrompt = null;
+    });
+
+    // Регистрация Service Worker (для работы без интернета)
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js');
+    }
 </script>
 
 </body>
