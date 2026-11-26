@@ -125,7 +125,7 @@
                 btnElement.disabled = false;
                 btnElement.style.backgroundColor = "#008CBA";
 
-                // Звук для Android и компьютеров (iPhone его может заблокировать, это нормально)
+                // Звук
                 var beep = new Audio("beep.mp3");
                 beep.volume = 0.5;
                 beep.play().catch(function() {});
@@ -135,7 +135,8 @@
                     navigator.vibrate([200, 100, 200]);
                 }
 
-                // Мигание текста для всех (включая iPhone)
+                // Принудительно показываем блок и запускаем мигание
+                display.style.display = "block"; 
                 var blinks = 0;
                 var blink = setInterval(function() {
                     display.style.opacity = display.style.opacity === "0.2" ? "1" : "0.2";
@@ -148,7 +149,6 @@
             }
         }, 1000);
     }
-
     // Кнопка установки приложения (PWA)
     let installPrompt = null;
     const installBtn = document.getElementById('installBtn');
