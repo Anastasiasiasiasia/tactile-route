@@ -109,6 +109,10 @@
         var display = document.getElementById(displayId);
         var timeLeft = seconds;
 
+        // Создаем "пустой" звук и запускаем его на долю секунды при клике
+        var silentAudio = new Audio(); 
+        silentAudio.play().catch(function() {});
+
         // Блокирую кнопку, чтобы не нажимали дважды, и сбрасываю цвет на красный
         btnElement.disabled = true;
         btnElement.style.backgroundColor = "#999";
