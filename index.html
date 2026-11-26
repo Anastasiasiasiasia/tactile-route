@@ -104,23 +104,16 @@
             .bindPopup(popupContent);
     });
 
-    // Функция работы таймера (обратный отсчёт)
     function startTimer(seconds, displayId, btnElement) {
         var display = document.getElementById(displayId);
         var timeLeft = seconds;
 
-        // Создаем звук ЗАРАНЕЕ, в момент нажатия кнопки (это обманывает iPhone)
-        var beep = new Audio("beep.mp3");
-        beep.load(); 
-
-        // Блокирую кнопку и настраиваю вид
         btnElement.disabled = true;
         btnElement.style.backgroundColor = "#999";
         display.style.display = "block";
         display.style.color = "#d32f2f";
         display.innerHTML = "Осталось: " + timeLeft + " сек";
 
-        // Каждую секунду уменьшаю счётчик
         var countdown = setInterval(function() {
             timeLeft--;
             display.innerHTML = "Осталось: " + timeLeft + " сек";
@@ -132,14 +125,26 @@
                 btnElement.disabled = false;
                 btnElement.style.backgroundColor = "#008CBA";
 
+                // Звук для Android и компьютеров (iPhone его может заблокировать, это нормально)
+                var beep = new Audio("beep.mp3");
+                beep.volume = 0.5;
+                beep.play().catch(function() {});
+
                 // Вибрация для Android
                 if (navigator.vibrate) {
                     navigator.vibrate([200, 100, 200]);
                 }
 
-                // Звук (мы просто вызываем play() у уже созданного объекта)
-                beep.volume = 0.5;
-                beep.play().catch(function(e) { console.log("Звук не сработал", e); });
+                // Мигание текста для всех (включая iPhone)
+                var blinks = 0;
+                var blink = setInterval(function() {
+                    display.style.opacity = display.style.opacity === "0.2" ? "1" : "0.2";
+                    blinks++;
+                    if (blinks > 4) {
+                        clearInterval(blink);
+                        display.style.opacity = "1";
+                    }
+                }, 300);
             }
         }, 1000);
     }
