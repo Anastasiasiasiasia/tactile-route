@@ -109,11 +109,11 @@
         var display = document.getElementById(displayId);
         var timeLeft = seconds;
 
-        // Создаем "пустой" звук и запускаем его на долю секунды при клике
-        var silentAudio = new Audio(); 
-        silentAudio.play().catch(function() {});
+        // Создаем звук ЗАРАНЕЕ, в момент нажатия кнопки (это обманывает iPhone)
+        var beep = new Audio("beep.mp3");
+        beep.load(); 
 
-        // Блокирую кнопку, чтобы не нажимали дважды, и сбрасываю цвет на красный
+        // Блокирую кнопку и настраиваю вид
         btnElement.disabled = true;
         btnElement.style.backgroundColor = "#999";
         display.style.display = "block";
@@ -137,10 +137,9 @@
                     navigator.vibrate([200, 100, 200]);
                 }
 
-                // Звук для всех (и для iPhone)
-                var beep = new Audio("beep.mp3");
+                // Звук (мы просто вызываем play() у уже созданного объекта)
                 beep.volume = 0.5;
-                beep.play();
+                beep.play().catch(function(e) { console.log("Звук не сработал", e); });
             }
         }, 1000);
     }
